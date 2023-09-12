@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import prisma from "@/lib/db";
 import { getProductById } from "@/lib/products";
+import { revalidatePath } from 'next/cache'
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
   const productId = parseInt(params.id, 10);
@@ -30,14 +31,14 @@ export default async function ProductPage({ params }: { params: { id: string } }
         image: formData.get('image') as string,
       },
     });
-    console.log(updatedProduct);
+    revalidatePath(`/product/${productId}/edit`);
   }
 
   return (
     <main className="flex justify-center">
-      <Card className="w-[350px]">
+      <Card className="w-[480px]">
         <CardHeader>
-          <h1 className="text-4xl font-bold pb-4">Edit Product</h1>
+          <h1 className="text-4xl font-bold pb-4">Edit Product: {product.name}</h1>
         </CardHeader>
         <form action={saveProduct}>
           <CardContent className="flex flex-col gap-y-4">
