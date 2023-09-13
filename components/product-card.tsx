@@ -15,9 +15,13 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Product } from "@prisma/client";
 
-type Props = Pick<Product, "id" | "name" | "description" | "price" | "image">;
+type Props = {
+  product: Pick<Product, "id" | "name" | "description" | "price" | "image">
+};
 
-export default function ProductCard({ id, name, description, price, image }: Props) {
+export default function ProductCard({ product }: Props) {
+  const { id, name, description, price, image } = product;
+
   return (
     <Card className="w-[350px]">
       <CardHeader className="p-0 rounded-t-md overflow-hidden">
@@ -35,10 +39,10 @@ export default function ProductCard({ id, name, description, price, image }: Pro
         <Label>{price}</Label>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Link className={cn(buttonVariants({ variant: "ghost" }))} href={`product/${id}/edit`}>
+        <Link className={cn(buttonVariants({ variant: "ghost" }))} href={`/products/${id}/edit`}>
           Edit
         </Link>
-        <Link className={cn(buttonVariants({ variant: "default" }))} href={`product/${id}`}>
+        <Link className={cn(buttonVariants({ variant: "default" }))} href={`/products/${id}`}>
           View
         </Link>
       </CardFooter>

@@ -1,3 +1,6 @@
+import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import prisma from "@/lib/db";
 import { getProductById } from "@/lib/products";
-import { revalidatePath } from 'next/cache'
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
   const productId = parseInt(params.id, 10);
@@ -31,7 +33,22 @@ export default async function ProductPage({ params }: { params: { id: string } }
         image: formData.get('image') as string,
       },
     });
-    revalidatePath(`/product/${productId}/edit`);
+    revalidatePath(`/products/${productId}/edit`);
+  }
+
+  async function saveProductAndView(formData: FormData) {
+    'use server';
+    const updatedProduct = await prisma.product.update({
+      where: { id: productId },
+      data: {
+        name: formData.get('name') as string,
+        price: parseInt(formData.get('price') as string, 10),
+        description: formData.get('description') as string,
+        image: formData.get('image') as string,
+      },
+    });
+    revalidatePath(`/products/${productId}`);
+    redirect(`/products/${productId}`);
   }
 
   return (
@@ -59,7 +76,8 @@ export default async function ProductPage({ params }: { params: { id: string } }
               <Input id="image" name="image" type="text" defaultValue={product.image} />
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex justify-end space-x-4">
+            <Button variant="outline" formAction={saveProductAndView}>Save and View</Button>
             <Button type="submit">Save</Button>
           </CardFooter>
         </form>
