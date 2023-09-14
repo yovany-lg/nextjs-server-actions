@@ -1,6 +1,3 @@
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import prisma from "@/lib/db";
 import { getProductById } from "@/lib/products";
+import { saveProduct, saveProductAndView } from "../../actions";
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
   const productId = parseInt(params.id, 10);
@@ -22,35 +20,6 @@ export default async function ProductPage({ params }: { params: { id: string } }
     return <h1>Product not found</h1>;
   }
 
-  async function saveProduct(formData: FormData) {
-    'use server';
-    const updatedProduct = await prisma.product.update({
-      where: { id: productId },
-      data: {
-        name: formData.get('name') as string,
-        price: parseInt(formData.get('price') as string, 10),
-        description: formData.get('description') as string,
-        image: formData.get('image') as string,
-      },
-    });
-    revalidatePath(`/products/${productId}/edit`);
-  }
-
-  async function saveProductAndView(formData: FormData) {
-    'use server';
-    const updatedProduct = await prisma.product.update({
-      where: { id: productId },
-      data: {
-        name: formData.get('name') as string,
-        price: parseInt(formData.get('price') as string, 10),
-        description: formData.get('description') as string,
-        image: formData.get('image') as string,
-      },
-    });
-    revalidatePath(`/products/${productId}`);
-    redirect(`/products/${productId}`);
-  }
-
   return (
     <main className="flex justify-center">
       <Card className="w-[480px]">
@@ -58,6 +27,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
           <h1 className="text-4xl font-bold pb-4">Edit Product: {product.name}</h1>
         </CardHeader>
         <form action={saveProduct}>
+          <Input id="id" name="id" type="number" defaultValue={product.id} hidden className="hidden" />
           <CardContent className="flex flex-col gap-y-4">
             <div className="flex flex-col gap-y-2">
               <Label htmlFor="name">Name</Label>

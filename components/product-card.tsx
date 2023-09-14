@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -14,9 +14,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Product } from "@prisma/client";
+import ProductHearts from "./Hearts";
+import ProductHeartsOptimistic from "./hearts-optimistic";
 
 type Props = {
-  product: Pick<Product, "id" | "name" | "description" | "price" | "image">
+  product: Pick<Product, "id" | "name" | "description" | "price" | "image"> & { _count?: { hearts: number } }
 };
 
 export default function ProductCard({ product }: Props) {
@@ -34,7 +36,11 @@ export default function ProductCard({ product }: Props) {
         />
       </CardHeader>
       <CardContent className="pt-4">
-        <CardTitle>{name}</CardTitle>
+        <div className="flex justify-between items-center">
+          <CardTitle>{name}</CardTitle>
+          <ProductHearts count={product._count?.hearts ?? 0} productId={id} />
+          <ProductHeartsOptimistic count={product._count?.hearts ?? 0} productId={id} />
+        </div>
         <CardDescription>{description}</CardDescription>
         <Label>{price}</Label>
       </CardContent>
