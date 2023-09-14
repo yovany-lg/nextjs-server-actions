@@ -5,13 +5,13 @@ const products = [
   {
     name: 'Oranges',
     price: 100,
-    description: 'Delicius orange',
+    description: 'Delicious orange',
     image: 'https://images.pexels.com/photos/693795/pexels-photo-693795.jpeg?cs=srgb&dl=pexels-rp-photography-693795.jpg&fm=jpg&w=1280&h=819',
   },
   {
     name: 'Apples',
     price: 200,
-    description: 'Delicius apple for you',
+    description: 'Delicious apple for you',
     image: 'https://images.pexels.com/photos/672101/pexels-photo-672101.jpeg?cs=srgb&dl=pexels-mareefe-672101.jpg&fm=jpg&w=1280&h=853',
   },
   {
@@ -23,7 +23,7 @@ const products = [
   {
     name: 'Peaches',
     price: 250,
-    description: 'Delicius peaches',
+    description: 'Delicious peaches',
     image: 'https://images.pexels.com/photos/4397924/pexels-photo-4397924.jpeg?cs=srgb&dl=pexels-karolina-grabowska-4397924.jpg&fm=jpg&w=1280&h=853',
   },
   {
