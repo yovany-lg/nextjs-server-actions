@@ -11,23 +11,22 @@ export default function ProductHeartsOptimistic({
   count: number;
   productId: number;
 }) {
-  const [optimisticCount, addOptimisticCount] = useOptimistic(
+  const [heartsCount, increaseHeartsCount] = useOptimistic<number, number>(
     count,
-    (state, action) => {
-      console.log({action})
-      return state + 1
+    (state, increase) => {
+      return state + increase;
     }
   );
 
   return (
     <Button variant="outline" onClick={async () => {
-      addOptimisticCount(1);
+      increaseHeartsCount(1);
       await addProductHeart(productId);
     }}>
-      {optimisticCount > 0 ? (
+      {heartsCount > 0 ? (
         <>
           <HeartFilledIcon className="text-red-500 mr-1" />
-          {optimisticCount} opt
+          {heartsCount} opt
         </>
       ) : (
         <HeartIcon />
