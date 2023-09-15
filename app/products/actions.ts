@@ -1,15 +1,18 @@
 'use server';
 import prisma from '@/lib/db';
-import { SaveProductSchema } from '@/lib/schema';
+import { ProductSchema, ProductSchemaType } from '@/lib/schema';
+import { ServerActionResponse } from '@/types/actions';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-export async function saveProduct(formData: FormData) {
+export async function saveProduct(
+  formData: FormData
+): Promise<ServerActionResponse<ProductSchemaType>> {
   const rawInput = Object.fromEntries(formData);
-  const validationResult = SaveProductSchema.safeParse(rawInput);
+  const validationResult = ProductSchema.safeParse(rawInput);
 
   if (!validationResult.success) {
-    throw new Error('Invalid input');
+    return { success: false, errors: validationResult.error.format() };
   }
 
   const { id, name, description, image, price } = validationResult.data;
@@ -26,15 +29,17 @@ export async function saveProduct(formData: FormData) {
   revalidatePath(`/products/${id}/edit`);
   revalidatePath(`/products`);
 
-  return { message: 'Success' };
+  return { success: true, message: 'Product updated successfully!' };
 }
 
-export async function saveProductAndView(formData: FormData) {
+export async function saveProductAndView(
+  formData: FormData
+): Promise<ServerActionResponse<ProductSchemaType>> {
   const rawInput = Object.fromEntries(formData);
-  const validationResult = SaveProductSchema.safeParse(rawInput);
+  const validationResult = ProductSchema.safeParse(rawInput);
 
   if (!validationResult.success) {
-    throw new Error('Invalid input');
+    return { success: false, errors: validationResult.error.format() };
   }
 
   const { id, name, description, image, price } = validationResult.data;
