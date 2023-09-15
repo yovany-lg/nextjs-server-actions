@@ -9,7 +9,7 @@ export async function saveProduct(formData: FormData) {
   const validationResult = SaveProductSchema.safeParse(rawInput);
 
   if (!validationResult.success) {
-    throw new Error(validationResult.error.message);
+    throw new Error('Invalid input');
   }
 
   const { id, name, description, image, price } = validationResult.data;
