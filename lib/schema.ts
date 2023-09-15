@@ -4,7 +4,7 @@ export const ProductPageParamsSchema = z.object({
   id: z.coerce.number().int().positive(),
 });
 
-export const SaveProductSchema = z.object({
+export const ProductSchema = z.object({
   id: z.coerce.number().int().positive(),
   name: z
     .string()
@@ -17,6 +17,9 @@ export const SaveProductSchema = z.object({
   description: z
     .string()
     .trim()
+    .min(3, { message: 'Must be 3 or more characters long' })
     .max(255, 'Must be 255 or less characters long'),
   image: z.string().trim().url({ message: 'Must be a valid URL' }),
 });
+
+export type ProductSchemaType = z.infer<typeof ProductSchema>;
