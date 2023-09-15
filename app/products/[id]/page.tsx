@@ -1,14 +1,15 @@
-import ProductCard from "@/components/product-card";
-import { getProductById } from "@/lib/products";
-import { notFound } from "next/navigation";
+import ProductCard from '@/components/product-card';
+import { getProductById } from '@/lib/products';
+import { ProductPageParamsSchema } from '@/lib/schema';
+import { notFound } from 'next/navigation';
 
 export default async function ProductPage({
   params,
 }: {
-  params: { id: string };
+  params: Record<string, unknown>;
 }) {
-  const productId = parseInt(params.id, 10);
-  const product = await getProductById(productId);
+  const { id } = ProductPageParamsSchema.parse(params);
+  const product = await getProductById(id);
 
   if (!product) {
     return notFound();
