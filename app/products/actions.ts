@@ -1,28 +1,38 @@
-"use server"
+'use server';
 import prisma from '@/lib/db';
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
+import { SaveProductSchema } from '@/lib/schema';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 export async function saveProduct(formData: FormData) {
-  const productId = parseInt(formData.get('id') as string, 10);
+  const rawInput = Object.fromEntries(formData);
+  const validationResult = SaveProductSchema.safeParse(rawInput);
 
-  const updatedProduct = await prisma.product.update({
-    where: { id: productId },
+  if (!validationResult.success) {
+    throw new Error(validationResult.error.message);
+  }
+
+  const { id, name, description, image, price } = validationResult.data;
+
+  await prisma.product.update({
+    where: { id },
     data: {
-      name: formData.get('name') as string,
-      price: parseInt(formData.get('price') as string, 10),
-      description: formData.get('description') as string,
-      image: formData.get('image') as string,
+      name,
+      price,
+      description,
+      image,
     },
   });
-  revalidatePath(`/products/${productId}/edit`);
+  revalidatePath(`/products/${id}/edit`);
   revalidatePath(`/products`);
+
+  return { message: 'Success' };
 }
 
 export async function saveProductAndView(formData: FormData) {
   const productId = parseInt(formData.get('id') as string, 10);
 
-  const updatedProduct = await prisma.product.update({
+  await prisma.product.update({
     where: { id: productId },
     data: {
       name: formData.get('name') as string,
