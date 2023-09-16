@@ -1,21 +1,17 @@
 'use server';
 import prisma from '@/lib/db';
-import { ProductSchema, ProductSchemaType } from '@/lib/schema';
-import { ServerActionResponse } from '@/types/actions';
+import {
+  ProductIdSchema,
+  ProductIdSchemaType,
+  ProductSchema,
+  ProductSchemaType,
+} from '@/lib/schema';
+import { createServerAction } from '@/lib/serverActions';
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
-export async function saveProduct(
-  formData: FormData
-): Promise<ServerActionResponse<ProductSchemaType>> {
-  const rawInput = Object.fromEntries(formData);
-  const validationResult = ProductSchema.safeParse(rawInput);
-
-  if (!validationResult.success) {
-    return { success: false, errors: validationResult.error.format() };
-  }
-
-  const { id, name, description, image, price } = validationResult.data;
+async function saveProduct({ input }: { input: ProductSchemaType }) {
+  const { id, name, description, image, price } = input;
 
   await prisma.product.update({
     where: { id },
@@ -29,20 +25,16 @@ export async function saveProduct(
   revalidatePath(`/products/${id}/edit`);
   revalidatePath(`/products`);
 
-  return { success: true, message: 'Product updated successfully!' };
+  return 'Product updated successfully!';
 }
 
-export async function saveProductAndView(
-  formData: FormData
-): Promise<ServerActionResponse<ProductSchemaType>> {
-  const rawInput = Object.fromEntries(formData);
-  const validationResult = ProductSchema.safeParse(rawInput);
+export const saveProductAction = createServerAction({
+  inputSchema: ProductSchema,
+  handler: saveProduct,
+});
 
-  if (!validationResult.success) {
-    return { success: false, errors: validationResult.error.format() };
-  }
-
-  const { id, name, description, image, price } = validationResult.data;
+async function saveProductAndView({ input }: { input: ProductSchemaType }) {
+  const { id, name, description, image, price } = input;
 
   await prisma.product.update({
     where: { id },
@@ -58,12 +50,23 @@ export async function saveProductAndView(
   redirect(`/products/${id}`);
 }
 
-export async function addProductHeart(productId: number) {
+export const saveProductAndViewAction = createServerAction({
+  inputSchema: ProductSchema,
+  handler: saveProductAndView,
+});
+
+async function addProductHeart({ input }: { input: ProductIdSchemaType }) {
+  const { id } = input;
   await prisma.productHearts.create({
     data: {
-      productId,
+      productId: id,
     },
   });
-  revalidatePath(`/products/${productId}`);
+  revalidatePath(`/products/${id}`);
   revalidatePath(`/products`);
 }
+
+export const addProductHeartAction = createServerAction({
+  inputSchema: ProductIdSchema,
+  handler: addProductHeart,
+});

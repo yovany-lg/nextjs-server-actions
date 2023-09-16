@@ -1,8 +1,10 @@
 import { z } from 'zod';
 
-export const ProductPageParamsSchema = z.object({
+export const ProductIdSchema = z.object({
   id: z.coerce.number().int().positive(),
 });
+
+export type ProductIdSchemaType = z.infer<typeof ProductIdSchema>;
 
 export const ProductSchema = z.object({
   id: z.coerce.number().int().positive(),
