@@ -2,12 +2,13 @@ export type ServerActionErrors<T> = {
   [k in keyof T]?: { _errors: string[] };
 };
 
-export type ServerActionResponse<T> =
+export type ServerActionResponse<InputT, ResultT> =
   | {
       success: true;
-      message: string;
+      result: ResultT;
     }
   | {
       success: false;
-      errors: ServerActionErrors<T>;
+      errors?: ServerActionErrors<InputT>;
+      error: string;
     };
