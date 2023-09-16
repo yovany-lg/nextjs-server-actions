@@ -11,19 +11,22 @@ import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Button } from './ui/button';
 import { useState, useTransition } from 'react';
-import { saveProduct, saveProductAndView } from '@/app/products/actions';
+import {
+  saveProductAction,
+  saveProductAndViewAction,
+} from '@/app/products/actions';
 import { ProductSchemaType } from '@/lib/schema';
 import { ServerActionErrors } from '@/types/actions';
 
 export default function ProductForm({ product }: { product: Product }) {
   const [isPending, startTransition] = useTransition();
-  const [errors, setErrors] = useState<ServerActionErrors<ProductSchemaType>>(
-    {}
-  );
+  const [errors, setErrors] = useState<
+    ServerActionErrors<ProductSchemaType> | undefined
+  >(undefined);
 
   const formAction = async (data: FormData) => {
     startTransition(async () => {
-      const result = await saveProduct(data);
+      const result = await saveProductAction(data);
       if (!result.success) {
         setErrors(result.errors);
         return;
@@ -33,7 +36,7 @@ export default function ProductForm({ product }: { product: Product }) {
 
   const saveAndView = async (data: FormData) => {
     startTransition(async () => {
-      const result = await saveProductAndView(data);
+      const result = await saveProductAndViewAction(data);
       if (!result.success) {
         setErrors(result.errors);
         return;
@@ -66,7 +69,7 @@ export default function ProductForm({ product }: { product: Product }) {
               type="text"
               defaultValue={product.name}
             />
-            {errors.name && (
+            {errors?.name && (
               <div className="text-xs font-medium text-destructive">
                 {errors.name._errors.join(', ')}
               </div>
@@ -80,7 +83,7 @@ export default function ProductForm({ product }: { product: Product }) {
               type="number"
               defaultValue={product.price}
             />
-            {errors.price && (
+            {errors?.price && (
               <div className="text-xs font-medium text-destructive">
                 {errors.price._errors.join(', ')}
               </div>
@@ -93,7 +96,7 @@ export default function ProductForm({ product }: { product: Product }) {
               name="description"
               defaultValue={product.description ?? undefined}
             />
-            {errors.description && (
+            {errors?.description && (
               <div className="text-xs font-medium text-destructive">
                 {errors.description._errors.join(', ')}
               </div>
@@ -107,7 +110,7 @@ export default function ProductForm({ product }: { product: Product }) {
               type="text"
               defaultValue={product.image}
             />
-            {errors.image && (
+            {errors?.image && (
               <div className="text-xs font-medium text-destructive">
                 {errors.image._errors.join(', ')}
               </div>
