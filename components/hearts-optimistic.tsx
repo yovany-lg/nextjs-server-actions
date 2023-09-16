@@ -1,5 +1,5 @@
 'use client';
-import { addProductHeart } from '@/app/products/actions';
+import { addProductHeartAction } from '@/app/products/actions';
 import { Button } from '@/components/ui/button';
 import { HeartFilledIcon, HeartIcon } from '@radix-ui/react-icons';
 import { experimental_useOptimistic as useOptimistic } from 'react';
@@ -23,7 +23,9 @@ export default function ProductHeartsOptimistic({
       variant="outline"
       onClick={async () => {
         increaseHeartsCount(1);
-        await addProductHeart(productId);
+        const data = new FormData();
+        data.append('id', String(productId));
+        await addProductHeartAction(data);
       }}
     >
       {heartsCount > 0 ? (
