@@ -1,20 +1,9 @@
-import prisma from '@/lib/db';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
-import { revalidatePath } from 'next/cache';
+import { createTask } from '@/app/tasks/actions';
 
 export default function TaskForm() {
-  async function createTask(formData: FormData) {
-    'use server';
-    await prisma.task.create({
-      data: {
-        title: formData.get('title') as string,
-      },
-    });
-    revalidatePath('/tasks');
-  }
-
   return (
     <form action={createTask}>
       <div className="flex flex-col gap-y-2 mb-4">
