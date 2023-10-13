@@ -1,12 +1,19 @@
 'use client';
-
+import { experimental_useOptimistic as useOptimistic } from 'react';
 import { Task } from '@prisma/client';
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
 import { toggleTask } from '@/app/tasks/actions';
 
 export default function TaskComponent({ task }: { task: Task }) {
-  const { done, id, title } = task;
+  const [optimisticTask, toggle] = useOptimistic<Task, boolean>(
+    task,
+    (prevState, done) => ({
+      ...prevState,
+      done,
+    })
+  );
+  const { done, id, title } = optimisticTask;
   const taskId = `task-${id}`;
 
   return (
@@ -15,10 +22,13 @@ export default function TaskComponent({ task }: { task: Task }) {
         id={taskId}
         checked={done}
         onClick={async () => {
+          toggle(!done);
           await toggleTask(id, !done);
         }}
       />
-      <Label htmlFor={taskId}>{title}</Label>
+      <Label htmlFor={taskId} className={done ? 'line-through' : ''}>
+        {title}
+      </Label>
     </div>
   );
 }
