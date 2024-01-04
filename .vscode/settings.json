@@ -1,0 +1,13 @@
+{
+  "editor.codeActionsOnSave": {
+    // Run ESLint on save for JavaScript and TypeScript files
+    "source.fixAll.eslint": true
+  },
+  "eslint.validate": [
+    // Run ESLint only on JavaScript and TypeScript files
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ]
+}

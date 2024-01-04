@@ -1,47 +1,72 @@
-"use server"
+'use server';
 import prisma from '@/lib/db';
-import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
+import {
+  ProductIdSchema,
+  ProductIdSchemaType,
+  ProductSchema,
+  ProductSchemaType,
+} from '@/lib/schema';
+import { createServerAction } from '@/lib/serverActions';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
-export async function saveProduct(formData: FormData) {
-  const productId = parseInt(formData.get('id') as string, 10);
+async function saveProduct({ input }: { input: ProductSchemaType }) {
+  const { id, name, description, image, price } = input;
 
-  const updatedProduct = await prisma.product.update({
-    where: { id: productId },
+  await prisma.product.update({
+    where: { id },
     data: {
-      name: formData.get('name') as string,
-      price: parseInt(formData.get('price') as string, 10),
-      description: formData.get('description') as string,
-      image: formData.get('image') as string,
+      name,
+      price,
+      description,
+      image,
     },
   });
-  revalidatePath(`/products/${productId}/edit`);
+  revalidatePath(`/products/${id}/edit`);
   revalidatePath(`/products`);
+
+  return 'Product updated successfully!';
 }
 
-export async function saveProductAndView(formData: FormData) {
-  const productId = parseInt(formData.get('id') as string, 10);
+export const saveProductAction = createServerAction({
+  inputSchema: ProductSchema,
+  handler: saveProduct,
+});
 
-  const updatedProduct = await prisma.product.update({
-    where: { id: productId },
+async function saveProductAndView({ input }: { input: ProductSchemaType }) {
+  const { id, name, description, image, price } = input;
+
+  await prisma.product.update({
+    where: { id },
     data: {
-      name: formData.get('name') as string,
-      price: parseInt(formData.get('price') as string, 10),
-      description: formData.get('description') as string,
-      image: formData.get('image') as string,
+      name,
+      price,
+      description,
+      image,
     },
   });
-  revalidatePath(`/products/${productId}`);
+  revalidatePath(`/products/${id}`);
   revalidatePath(`/products`);
-  redirect(`/products/${productId}`);
+  redirect(`/products/${id}`);
 }
 
-export async function addProductHeart(productId: number) {
+export const saveProductAndViewAction = createServerAction({
+  inputSchema: ProductSchema,
+  handler: saveProductAndView,
+});
+
+async function addProductHeart({ input }: { input: ProductIdSchemaType }) {
+  const { id } = input;
   await prisma.productHearts.create({
     data: {
-      productId,
+      productId: id,
     },
   });
-  revalidatePath(`/products/${productId}`);
+  revalidatePath(`/products/${id}`);
   revalidatePath(`/products`);
 }
+
+export const addProductHeartAction = createServerAction({
+  inputSchema: ProductIdSchema,
+  handler: addProductHeart,
+});
